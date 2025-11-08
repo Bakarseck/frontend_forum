@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {authAPI} from "@/lib/api";
 
 interface RegisterDialogProps {
   open: boolean
@@ -33,12 +34,9 @@ export function RegisterDialog({ open, onOpenChange, onSuccess }: RegisterDialog
 
     setLoading(true)
 
-    // TODO: Connect to your Golang API
-    // Example: POST /api/register with { username, email, password }
+    const response = await authAPI.register({ email, username, password });
 
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Register attempt:", { username, email, password })
+    if (response.status === 200) {
       onSuccess(username)
       setLoading(false)
       onOpenChange(false)
@@ -46,7 +44,10 @@ export function RegisterDialog({ open, onOpenChange, onSuccess }: RegisterDialog
       setEmail("")
       setPassword("")
       setConfirmPassword("")
-    }, 1000)
+    } else {
+      setError(response.data.message)
+      setLoading(false)
+    }
   }
 
   return (
